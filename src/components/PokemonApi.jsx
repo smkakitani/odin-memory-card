@@ -4,6 +4,8 @@ export default function fetchData(url) {
   } else if (url.startsWith('/generation/generation-')) {
     // console.log('API ' + url);
     return fetchGenerationPokemon(url);
+  } else if (url.startsWith('/pokemon/')) {
+    return fetchPokemon(url);
   } else {
     console.log('Error with ' + url);
   }
@@ -33,5 +35,18 @@ async function fetchGeneration() {
     return generationList;
   } catch (error) {
     console.log('Error: ' + error);
+  }
+}
+
+// Pokemon
+async function fetchPokemon(pokemon) {
+  try {
+    const response = await fetch('https://pokeapi.co/api/v2' + pokemon + '/', {mode: 'cors'});
+    const pokemonList = await response.json();
+    console.log(pokemonList);
+  
+    return pokemonList;
+  } catch (error) {
+    console.log('Error fetching pokemon: ' + error + '. Received' + pokemon);
   }
 }
