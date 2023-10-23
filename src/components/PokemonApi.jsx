@@ -1,21 +1,37 @@
-export default function fetchData(generation) {
-  if (generation > 9) {
-    throw Error("This generation doesn't exist");
+export default function fetchData(url) {
+  if (url === '/generation/') {
+    return fetchGeneration();
+  } else if (url.startsWith('/generation/generation-')) {
+    // console.log('API ' + url);
+    return fetchGenerationPokemon(url);
   } else {
-    fetchGeneration(generation);
+    console.log('Error with ' + url);
   }
   
 }
 
-// Only first generation pokemon
-async function fetchGeneration(gen) {
+// Generation pokemon
+async function fetchGenerationPokemon(gen) {
   try {
-    const response = await fetch('https://pokeapi.co/api/v2/generation/' + gen + '/', {mode: 'cors'});
-    const firstGen = await response.json();
+    const response = await fetch('https://pokeapi.co/api/v2' + gen + '/', {mode: 'cors'});
+    const pokemonGen = await response.json();
+    // console.log(pokemonGen);
 
-    console.log(firstGen);
+    return pokemonGen;
   } catch (error) {
-    // throw error
-    // console.log('Error: ' + error);
+    console.log('Error: ' + error + '. Received: ' + gen);
+  }
+}
+
+// Generations
+async function fetchGeneration() {
+  try {
+    const response = await fetch('https://pokeapi.co/api/v2/generation/', {mode: 'cors'});
+    const generationList = await response.json();
+    // console.log(generationList);
+
+    return generationList;
+  } catch (error) {
+    console.log('Error: ' + error);
   }
 }
