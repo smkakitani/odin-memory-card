@@ -42,10 +42,10 @@ async function fetchGeneration() {
 async function fetchPokemon(pokemon) {
   try {
     const response = await fetch('https://pokeapi.co/api/v2' + pokemon + '/', {mode: 'cors'});
-    const pokemonList = await response.json();
-    console.log(pokemonList);
+    const pokemonInfo = await response.json();
+    // console.log(pokemonInfo);
   
-    return pokemonList;
+    return pokemonInfo;
   } catch (error) {
     console.log('Error fetching pokemon: ' + error + '. Received' + pokemon);
   }
