@@ -9,14 +9,22 @@
 fieldset {
   background-color: var(--white-bg-transparent);
 
+  max-width: 350px;
   padding: 1rem;
+
+  border: 7px double black;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 1rem;
 }
 
-fieldset div:last-child {
+.legend {
+  font-size: 1.25rem;
+}
+
+.generationList {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -25,7 +33,13 @@ fieldset div:last-child {
   padding-left: 1rem;
 }
 
+.generationList > label {
+  display: flex;
+  align-items: center;
+}
+
 input[type="radio"] {
   /* hide radio style */
-  appearance: none;
+  /* appearance: none; */
 }
+
