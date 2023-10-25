@@ -1,0 +1,46 @@
+
+.game-container {
+  min-width: 600px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.score-container {
+  background-color: var(--white-bg-transparent);
+
+  align-self: center;
+}
+
+#board {
+  background-color: var(--white-bg-transparent);
+  border: 5px double black;
+
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.card-container {
+  cursor: pointer;
+  
+  /* background-color: var(--white-bg-transparent); */
+
+  /* border: 1px solid black; */
+  box-shadow: rgba(60, 64, 67, 0.4) 0px 1px 2px 0px, rgba(60, 64, 67, 0.30) 0px 2px 6px 2px;;
+  height: 150px;
+  width: 120px;
+  margin: 1rem;
+
+  justify-self: center;
+  
+}
+
+.sprite {
+  height: 90px;
+}
+
+.pokemon-name {
+  background-color: var(--black-bg-transparent);
+  color: white;
+}
