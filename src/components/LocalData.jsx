@@ -1,3 +1,4 @@
+// Maps of main places
 import bgKanto from '../assets/map/Kanto_Map.png'
 import bgJohto from '../assets/map/Johto_Map.png'
 import bgHoenn from '../assets/map/Hoenn_Map.png'
@@ -8,9 +9,18 @@ import bgAlola from '../assets/map/Alola_Map.png'
 import bgGalar from '../assets/map/Galar_Map.png'
 import bgPaldea from '../assets/map/Paldea_Map.png'
 
+// Glitch pokemon
 import missingNo from '../assets/Pokemon_Missingno.png'
+import pokeGlitch1 from '../assets/Kabuto_Fossil.png'
 
 
+const glitchPokemon = [
+  {
+    id: 1,
+    sprite: pokeGlitch1,
+    name: 'Kabuto Fossil'
+  }
+]
 
 const backgroundImg = {
   'generation-i': {
@@ -64,4 +74,6 @@ const backgroundImg = {
 
 };
 
-export { backgroundImg }
+
+
+export { backgroundImg, glitchPokemon }
