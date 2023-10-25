@@ -43,36 +43,6 @@ function createPokemonArray(pokeArray, pokemonIndex) {
   return pokemon;
 }
 
-const useSpriteApi = () => {
-  const [pokemonSprite, setPokemonSprite] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [pokemonSpriteList, setPokemonSpriteList] = useState([]);
-
-
-  useEffect(() => {
-    let pokepoke = 'ditto';
-    const apiPokemon = async () => {
-      try {
-        const response = await fetchData('/pokemon/' + pokepoke)
-        const pokeInfo = response;
-
-
-        // console.log(pokeInfo.sprites);
-      } catch (error) {
-        console.log(error);
-        return setError(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    apiPokemon();
-  }, [pokemonSprite]);
-
-  return { pokemonSprite, loading, error}
-}
-
 export default function GameTable() {
   const [generationList, setGenerationList] = useState([]);
   const [selectGen, setSelectGen] = useState('generation-i');
