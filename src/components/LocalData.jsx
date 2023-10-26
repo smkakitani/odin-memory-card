@@ -12,14 +12,35 @@ import bgPaldea from '../assets/map/Paldea_Map.png'
 // Glitch pokemon
 import missingNo from '../assets/Pokemon_Missingno.png'
 import pokeGlitch1 from '../assets/Kabuto_Fossil.png'
+import pokeGlitch2 from '../assets/YGlitchMissingno_.png'
+import pokeGlitch3 from '../assets/Aerodactyl_Fossil.png'
+
+// Loading icon
+import pokeballGif from '../assets/Pokeball.gif'
 
 
 const glitchPokemon = [
   {
     id: 1,
     sprite: pokeGlitch1,
-    name: 'Kabuto Fossil'
+    name: 'Kabutops Fossil'
+  },
+  {
+    id: 2,
+    sprite: pokeGlitch2,
+    name: 'Y Missingno'
+  },
+  {
+    id: 3,
+    sprite: missingNo,
+    name: 'Ghost'
+  },
+  {
+    id: 4,
+    sprite: pokeGlitch3,
+    name: 'Aerodactyl Fossil'
   }
+
 ]
 
 const backgroundImg = {
@@ -70,6 +91,9 @@ const backgroundImg = {
   },
   error: {
     path: missingNo
+  },
+  loadingIcon: {
+    path: pokeballGif
   }
 
 };
