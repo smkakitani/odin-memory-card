@@ -44,7 +44,7 @@ function createPokemonArray(pokeArray, pokemonIndex) {
 }
 
 export default function GameTable() {
-  const [generationList, setGenerationList] = useState([]);
+  const [generationList, setGenerationList] = useState(null);
   const [selectGen, setSelectGen] = useState('generation-i');
 
   // store pokemon from current generation
@@ -53,11 +53,13 @@ export default function GameTable() {
 
   // Store info from pokeRandomNames and verify
   const [currentPokeInfo, setCurrentPokeInfo] = useState(null);
-  const [isCurrentPokeInfo, setIsCurrentPokeInfo] = useState(false);
+  const [isReset, setIsReset] = useState(false);
+  // const [isCurrentPokeInfo, setIsCurrentPokeInfo] = useState(false);
 
   // Background image change alongside current generation
   function changeBackground(imagePath) {
     const bodyStyle = document.body.style;
+    // console.log(imagePath);
 
     if (selectGen === 'generation-i') {
       bodyStyle.background = `url(${backgroundImg["generation-i"].path}) center`;
@@ -69,27 +71,24 @@ export default function GameTable() {
   }
 
   useEffect(() => {
-    if (selectGen !== '') {
-      changeBackground(selectGen);
-      // console.log('change bg?');
-    }
-
-  }, [selectGen]);
+    changeBackground('generation-i');
+  }, []);
 
   // Populate an array with API's generation data to use in Generation component
   useEffect(() => {
     let ignore = false;
+    setGenerationList(null);
 
     fetchData('/generation/').then(result => {
       if(!ignore) {
-        console.log('Fetched generation list from useEffect');
+        console.log('Fetching generation list');
         let nextId = 1;
         const tempArray = [];
         result.results.forEach(gen => {
           tempArray.push({ id: nextId++, name: gen.name });
         });
         setGenerationList(tempArray);
-        // console.log(generationList);
+        // console.log(result);
       }
     });
 
@@ -99,46 +98,68 @@ export default function GameTable() {
 
   // Get pokemon from current generation
   useEffect(() => {
-    console.log(selectGen + ' from API call.');
+    let ignore = false;
+    setPokeSpecies(null);
+
     const apiGeneration = async () => {
       try {
-        const response = await fetchData('/generation/' + selectGen);
-        console.log('Fetching "' + selectGen + '".');
-        const generationInfo = response;
-        
-        // console.log(generationInfo.pokemon_species);
-        setPokeSpecies(generationInfo.pokemon_species);
+        if(!ignore || isReset) {
+          console.log('Fetching pokemon from "' + selectGen + '".');
+
+          const response = await fetchData('/generation/' + selectGen);
+          const generationInfo = response;
+          
+          // console.log(generationInfo.pokemon_species);
+          setPokeSpecies(generationInfo.pokemon_species);
+        }
       } catch (error) {
         console.log(error)
       }      
     }
     apiGeneration();
-  }, [selectGen]);
+    setIsReset(false);
+
+    return () => ignore = true;
+  }, [selectGen, isReset]);
 
 
   // Update pokeRandomNames with current generation Species
   useEffect(() => {
-    if (pokeSpecies === null) return;
+    let ignore = false;
+    setPokeSpecies(null);
     
-    if (pokeSpecies.length > 0) {
-      getRandomPokemon(pokeSpecies);
-    }    
+    if (!ignore) {
+      if (pokeSpecies === null) return;
+
+      if (pokeSpecies.length > 0) {
+        getRandomPokemon(pokeSpecies);
+      }
+    }
+    
+    
+    return () => ignore = true;
   }, [pokeSpecies]);
 
 
   // Fetch data of all 9 random pokemon of current generation
   useEffect(() => {
+    let ignore = false;
+    setCurrentPokeInfo(null);
+
+
     if (pokeRandomNames === null) return;
 
     if (pokeRandomNames.length > 0) {
       // Fetch pokemon's info from API
       const apiPokemonInfo = async (url) => {
         try {
-          const response = await fetchData('/pokemon/' + url)
-          const currentPokemon = await response;
+          if (!ignore) {
+            const response = await fetchData('/pokemon/' + url)
+            const currentPokemon = await response;
 
-          // console.log(currentPokemon);
-          return currentPokemon;
+            // console.log(currentPokemon);
+            return currentPokemon;
+          }
         } catch (error) {
           console.log(error)
         }
@@ -146,18 +167,23 @@ export default function GameTable() {
 
       // Map through array of pokemon names to fetch each individual data
       const arrayInfo = async (arrayName) => {
-        const pokeInfo = await Promise.all(arrayName.map((name) => apiPokemonInfo(name)));
-        setCurrentPokeInfo(pokeInfo);
-        console.log(pokeInfo);
+        if (!ignore) {
+          const pokeInfo = await Promise.all(arrayName.map((name) => apiPokemonInfo(name)));
+          setCurrentPokeInfo(pokeInfo);
+          // console.log(pokeInfo);
+        }
       }
       arrayInfo(pokeRandomNames);
     }
+
+    return () => ignore = true;
   }, [pokeRandomNames]);
 
 
   // Handling Generation choice
   function handleSelectGeneration(event) {
     setSelectGen(event.target.value);
+    changeBackground(selectGen);
   }
 
   // Select 9 random pokemon from current generation
@@ -178,6 +204,14 @@ export default function GameTable() {
     // console.log(pokemonListName);
   }
 
+  function gameReset() {
+    setIsReset(true);
+
+    // let currentGeneration = selectGen;
+    // setSelectGen(currentGeneration);
+    // getRandomPokemon();
+  }
+
 
   return (
     <>
@@ -185,7 +219,12 @@ export default function GameTable() {
         generationList={generationList}
         handleRadio={handleSelectGeneration}
       />
-      <BoardGame />
+      <BoardGame 
+
+      pokemonList={currentPokeInfo}
+      isReset={isReset}
+      gameReset={gameReset}
+      />
     </>
   );
 }
