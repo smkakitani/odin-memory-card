@@ -1,6 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/Board.css'
-import { glitchPokemon, backgroundImg } from './LocalData';
 
 
 // Functions
@@ -14,7 +13,7 @@ function shuffle(array) {
   return array;
 }
 
-
+// Component 
 function CreateCard({ pokemon, onClick }) {
   const { name, id, sprite } = pokemon;
 
@@ -37,29 +36,10 @@ function CreateCard({ pokemon, onClick }) {
 }
 
 
-/* function useWindowListener(eventType, listener) {
-  useEffect(() => {
-    window.addEventListener(eventType, listener);
-
-    return () => {
-      window.removeEventListener(eventType, listener);
-    }
-  }, [eventType, listener]);
-} */
-
-// Main function
+// Main component
 export default function BoardGame({ pokemonList, isReset, gameReset }) {
-  // const [currentScore, setCurrentScore] = useState(0);
-  // const [highestScore, setHighestScore] = useState(0);
   // to store ID of clicked pokemon
-  // const [isShuffle, setIsShuffle] = useState(false);
   const [renderCards, setRenderCards] = useState(null);
-  const [isDisplayLoading, setIsDisplayLoading] = useState(true);
-  // const useRef = ;
-
-  // trying to group states since they are sync
-  // const [isGameReset, setIsGameReset] = useState(false);
-
   const [isGameRunning, setIsGameRunning] = useState(false);
   const [game, setGame] = useState({
     idCards: [],
@@ -91,57 +71,9 @@ export default function BoardGame({ pokemonList, isReset, gameReset }) {
     }    
   }, [pokemonList]);
 
-  // Sync functions with Children Components
-  /* useEffect(() => {
-    if (!isGameRunning) return;
-
-    if (isGameRunning) {
-
-    }
-
-
-
-  }, []); */
-
-  // Managing clicked cards
-/*   useEffect(() => {
-    // check if ID card is already in state
-    // update current and highest scores if it's a new ID 
-    // SHUFFLE with same cards
-
-    // if ID isn't new
-    // current score equals 0 but keep highest score
-    // game reset
-    // SHUFFLE with new cards
-    if (isGameRunning) {
-      // console.log(typeof cardId);
-      console.log(game.idCards);
-  
-      const nextCardId = cardId;
-      console.log(Number.isNaN(cardId));
-
-      if (game.idCards.includes(nextCardId) || cardId === '') {
-        console.log('this id already exist or isnt a number')
-      } else {
-      // update id
-        setGame({
-          idCards: [
-            ...game.idCards,
-            cardId
-          ],
-          current_score: current_score++
-        });
-        
-      }
-    }
-
-    return () => setIsGameRunning(false);
-    
-  }, [cardId, isGameRunning]); */
-
 
   // Clicking cards
-  function handleCards(event, pokemon) {
+  const handleCards = (event, pokemon) => {
     console.log(pokemon.id);
 
     if (game.idCards.includes(pokemon.id)) {
@@ -188,7 +120,7 @@ export default function BoardGame({ pokemonList, isReset, gameReset }) {
 
 
   // Shuffle 
-  const shuffleCards = (/* pokeArr */) => {
+  const shuffleCards = () => {
     console.log('shuffling cards!');
     console.log('Current state', renderCards);
 
@@ -201,20 +133,8 @@ export default function BoardGame({ pokemonList, isReset, gameReset }) {
   }
 
 
-  // Handle score
-  function handleScore(pokeId) {
-    // check if event.target had been clicked    
-
-  } 
-
-  function resetGame() {
-    isReset = true;
-  }
-
   // Score board -> send outside this function?
-  function ScoreTable(/* { currentScore, highestScore } */) {
-    
-
+  function ScoreTable() {
     return (
       <div className="score-container">
         <p>Score</p>
@@ -225,87 +145,11 @@ export default function BoardGame({ pokemonList, isReset, gameReset }) {
   }
 
   if (pokemonList === null) return <p>Loading</p>;
-  
-
-  // let initialPokeList = pokemonList.slice();
-  // let initialPokeRender = initialPokeList.map(poke => {
-  //   const pokemon = {
-  //     id: poke.id,
-  //     name: poke.name,
-  //     sprite: poke.sprites.other["official-artwork"].front_default
-  //   };
-
-  //   return (
-  //     <CreateCard 
-  //       key={pokemon.id}
-  //       pokemon={pokemon}
-  //       handleClick={() => handleCards(event, pokemon)}/>
-  //   );
-  // });
-
-  // if (renderCards === null && pokemonList) {
-  //   // setRenderCards(() => initialPokeRender);
-  //   setIsGameRunning(() => true);
-  //   // trigger render
-  //   shuffleCards(initialPokeRender);
-  // }
-
- /*  if (renderCards === null && initialPokeList.length > 0) {
-    let initialPokeRender = initialPokeList.map(poke => {
-      const pokemon = {
-        id: poke.id,
-        name: poke.name,
-        sprite: poke.sprites.other["official-artwork"].front_default
-      };
-      // console.log('creating pokemon')
-      return (
-        <CreateCard 
-          key={pokemon.id}
-          pokemon={pokemon}
-          onClick={(event) => handleCards(event, pokemon)}/>
-      );
-    });
-    // console.log('initializing renderCards');
-    const shuffled = shuffleCards(initialPokeRender);
-    setRenderCards(() => shuffled);
-    setIsGameRunning(true);
-  } */
-
-  /* let initialPokeRender = initialPokeList.map(poke => {
-    const pokemon = {
-      id: poke.id,
-      name: poke.name,
-      sprite: poke.sprites.other["official-artwork"].front_default
-    };
-    // console.log('creating pokemon')
-    return (
-      <CreateCard 
-        key={pokemon.id}
-        pokemon={pokemon}
-        onClick={() => handleCards(event, pokemon)}/>
-    );
-  }); */
-  // console.log('initializing renderCards');
-  /* if (initialPokeList.length > 0 && renderCards === null) {
-    const shuffled = shuffleCards(initialPokeRender);
-    setRenderCards(() => shuffled);
-    // console.log(initialPokeRender[0].props);
-
-    
-  } */
-
-  // if (isShuffle) return shuffleCards();
-
-  // if (pokemonList === null) return <p>Loading</p>;
 
   return (
     <div className='game-container'>
-      <ScoreTable 
-        // currentScore={currentScore}
-        // highestScore={highestScore}
-      />
-      <div id="board"
-        /* onClick={handleCards} */>
+      <ScoreTable />
+      <div id="board">
         {isGameRunning && renderCards.map(poke => {
           const pokemon = {
             id: poke.id,
@@ -321,20 +165,6 @@ export default function BoardGame({ pokemonList, isReset, gameReset }) {
             />
           )
         })}
-        {/* {initialPokeList && initialPokeList.map(poke => {
-          const pokemon = {
-            id: poke.id,
-            name: poke.name,
-            sprite: poke.sprites.other["official-artwork"].front_default
-          };
-
-          return (
-            <CreateCard 
-              key={pokemon.id}
-              pokemon={pokemon}
-              onClick={() => handleCards(event, pokemon)}/>
-          );
-        })} */}
       </div>
     </div>
   );
