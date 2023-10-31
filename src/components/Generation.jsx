@@ -15,6 +15,8 @@ function manageGenerationName(text) {
 // Generation fieldset component
 export default function GenerationBox({ generationList, handleRadio }) {
   // Use array [rowGenerations] to insert the component with data fetched from API
+  if (generationList === null) return <fieldset>Loading...</fieldset>;
+  
   const rowGenerations = [];
   generationList.map(generation =>
     rowGenerations.push(
@@ -34,7 +36,8 @@ export default function GenerationBox({ generationList, handleRadio }) {
     )
   );
 
-  if (generationList.length === 0) return <fieldset>Loading...</fieldset>;
+
+  // console.log(typeof rowGenerations);
 
   return (
     <fieldset>
