@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import fetchData from './PokemonApi'
-import { backgroundImg, glitchPokemon } from './LocalData';
+import { backgroundImg } from './LocalData';
 import GenerationBox from "./Generation";
 import BoardGame from "./Board";
 
@@ -43,18 +43,16 @@ function createPokemonArray(pokeArray, pokemonIndex) {
   return pokemon;
 }
 
-export default function GameTable() {
-  const [generationList, setGenerationList] = useState(null);
-  const [selectGen, setSelectGen] = useState('generation-i');
-
+export default function GameTable() { 
   // store pokemon from current generation
+  const [selectGen, setSelectGen] = useState('generation-i');
+  const [generationList, setGenerationList] = useState(null);
   const [pokeSpecies, setPokeSpecies] = useState(null);
   const [pokeRandomNames, setPokeRandomNames] = useState(null);
 
   // Store info from pokeRandomNames and verify
   const [currentPokeInfo, setCurrentPokeInfo] = useState(null);
   const [isReset, setIsReset] = useState(false);
-  // const [isCurrentPokeInfo, setIsCurrentPokeInfo] = useState(false);
 
   // Background image change alongside current generation
   function changeBackground(imagePath) {
@@ -206,10 +204,6 @@ export default function GameTable() {
 
   function gameReset() {
     setIsReset(true);
-
-    // let currentGeneration = selectGen;
-    // setSelectGen(currentGeneration);
-    // getRandomPokemon();
   }
 
 
@@ -220,10 +214,9 @@ export default function GameTable() {
         handleRadio={handleSelectGeneration}
       />
       <BoardGame 
-
-      pokemonList={currentPokeInfo}
-      isReset={isReset}
-      gameReset={gameReset}
+        pokemonList={currentPokeInfo}
+        isReset={isReset}
+        gameReset={gameReset}
       />
     </>
   );
