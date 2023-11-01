@@ -36,10 +36,32 @@ fieldset {
 .generationList > label {
   display: flex;
   align-items: center;
+
+  cursor: pointer;
+
+  transition: all 200ms ease-in-out;
+  /* padding-left: 1rem; */
 }
 
 input[type="radio"] {
   /* hide radio style */
-  /* appearance: none; */
+  appearance: none;
+  padding-left: 30px;
 }
 
+span {
+  width: 24px;
+  height: 24px;
+}
+
+label:hover {
+  color: blueviolet;
+  transform: scale(1.2);
+  /* content: url('src/assets/Poke_Ball.png'); */
+  /* position: absolute; */
+}
+
+label:has(input:checked)::before  {
+  content: url('src/assets/Poke_Ball.png');
+  position: absolute;
+}
