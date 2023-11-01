@@ -23,13 +23,9 @@ function CreateCard({ pokemon, onClick }) {
     className="card-container"
     onClick={onClick}>
       <div className="sprite">
-        <img 
-        src={pokemon.sprite} 
-        alt={pokemon.name}
-         />
+        <img src={pokemon.sprite} alt={pokemon.name} />
       </div>
-      <p className="pokemon-name">
-        {pokemon.name}
+      <p className="pokemon-name">{pokemon.name}
       </p>
     </div>
   );
@@ -137,14 +133,23 @@ export default function BoardGame({ pokemonList, isReset, gameReset }) {
   function ScoreTable() {
     return (
       <div className="score-container">
-        <p>Score</p>
-        <p className="highest-score">Highest: {game.highest_score}</p>
-        <p className="current-score">Current Score: {game.current_score}</p>
+        <p>SCORE</p>
+        <p className="highest-score">highest: {game.highest_score}</p>
+        <p className="current-score">current: {game.current_score}</p>
       </div>
     );
   }
 
-  if (pokemonList === null) return <p>Loading</p>;
+  if (!isGameRunning) {
+    return (
+      <div className='game-container'>
+        <ScoreTable />
+        <div id="board">
+          Loading...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='game-container'>
