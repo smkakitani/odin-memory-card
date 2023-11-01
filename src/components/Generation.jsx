@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import '../styles/Generation.css'
 
 
@@ -11,16 +12,45 @@ function manageGenerationName(text) {
   return newText;
 }
 
+function CreateGenerationsRadio({ generation, handleRadio }) {
+  // const [isHover, setIsHover] = useState(false);
+  const { id, name } = generation;
+  
+  return(
+    <label key={generation.id}
+      /* onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)} */>
+      <input
+      type="radio" 
+      name="generation" 
+      value={generation.name}
+      onChange={handleRadio}
+      defaultChecked={generation.name === 'generation-i'}
+      />
+      {manageGenerationName(generation.name)}
+    </label>
+  );  
+}
+
 
 // Generation fieldset component
 export default function GenerationBox({ generationList, handleRadio }) {
+  // const [isHover, setIsHover] = useState(false);
   // Use array [rowGenerations] to insert the component with data fetched from API
+
+  /* const handleOver = (event) => {
+    console.log(event.target);
+  } */
+
   if (generationList === null) return <fieldset>Loading...</fieldset>;
   
-  const rowGenerations = [];
-  generationList.map(generation =>
+  // const rowGenerations = [];
+ /*  generationList.map(generation =>
     rowGenerations.push(
-      <label key={generation.id}>
+      <label key={generation.id}
+        onMouseEnter={(event) => setIsHover(true)}
+        onMouseLeave={(event) => setIsHover(false)}>
+        
         <input
         type="radio" 
         name="generation" 
@@ -28,14 +58,14 @@ export default function GenerationBox({ generationList, handleRadio }) {
         onChange={handleRadio}
         defaultChecked={generation.name === 'generation-i'}
         />
-        <span className="material-symbols-outlined">
-          arrow_right
-          </span>
+        <span className="material-symbols-outlined">{isHover && ('arrow_right')}</span>
         {manageGenerationName(generation.name)}
       </label>
     )
-  );
+  ); */
 
+  let generationCards = generationList.slice();
+  // const rowGenerations = generationCards.map
 
   // console.log(typeof rowGenerations);
 
@@ -43,7 +73,19 @@ export default function GenerationBox({ generationList, handleRadio }) {
     <fieldset>
       <div className='legend'>Select your preferred Pokemon generation:</div>
       <div className='generationList'>
-        {rowGenerations}
+        {generationCards.map(gen => {
+          const generation = {
+            id: gen.id,
+            name: gen.name
+          }
+          return (
+            <CreateGenerationsRadio 
+              key={generation.id}
+              generation={generation}
+              handleRadio={handleRadio}
+            />
+          );
+        })}
       </div>
     </fieldset>
   );
