@@ -43,34 +43,32 @@ function createPokemonArray(pokeArray, pokemonIndex) {
   return pokemon;
 }
 
-export default function GameTable() { 
-  // store pokemon from current generation
+
+export default function GameTable() {
   const [selectGen, setSelectGen] = useState('generation-i');
   const [generationList, setGenerationList] = useState(null);
   const [pokeSpecies, setPokeSpecies] = useState(null);
   const [pokeRandomNames, setPokeRandomNames] = useState(null);
-
-  // Store info from pokeRandomNames and verify
   const [currentPokeInfo, setCurrentPokeInfo] = useState(null);
-  const [isReset, setIsReset] = useState(false);
-
-  // Background image change alongside current generation
-  function changeBackground(imagePath) {
-    const bodyStyle = document.body.style;
-    // console.log(imagePath);
-
-    if (selectGen === 'generation-i') {
-      bodyStyle.background = `url(${backgroundImg["generation-i"].path}) center`;
-      bodyStyle.backgroundSize = 'cover';
-    } else {
-      bodyStyle.background = `url(${backgroundImg[imagePath].path}) center`;
-      bodyStyle.backgroundSize = 'cover';
-    }
-  }
+  const [isReset, setIsReset] = useState(false);  
+  
 
   useEffect(() => {
-    changeBackground('generation-i');
-  }, []);
+    // Background image change alongside current generation
+    function changeBackground(imagePath) {      
+      const bodyStyle = document.body.style;
+      // console.log(imagePath);
+  
+      if (selectGen === 'generation-i') {
+        bodyStyle.background = `url(${backgroundImg["generation-i"].path}) center`;
+        bodyStyle.backgroundSize = 'cover';
+      } else {
+        bodyStyle.background = `url(${backgroundImg[imagePath].path}) center`;
+        bodyStyle.backgroundSize = 'cover';
+      }
+    }
+    changeBackground(selectGen);
+  }, [selectGen]);
 
   // Populate an array with API's generation data to use in Generation component
   useEffect(() => {
@@ -86,7 +84,7 @@ export default function GameTable() {
           tempArray.push({ id: nextId++, name: gen.name });
         });
         setGenerationList(tempArray);
-        // console.log(result);
+        // console.log(tempArray);
       }
     });
 
@@ -152,6 +150,10 @@ export default function GameTable() {
       const apiPokemonInfo = async (url) => {
         try {
           if (!ignore) {
+            // API problems with 'wishiwashi', adding '-solo' to fix it
+            if (url === 'wishiwashi') url = url + '-solo';
+
+            
             const response = await fetchData('/pokemon/' + url)
             const currentPokemon = await response;
 
@@ -162,7 +164,6 @@ export default function GameTable() {
           console.log(error)
         }
       }
-
       // Map through array of pokemon names to fetch each individual data
       const arrayInfo = async (arrayName) => {
         if (!ignore) {
@@ -181,8 +182,9 @@ export default function GameTable() {
   // Handling Generation choice
   function handleSelectGeneration(event) {
     setSelectGen(event.target.value);
-    changeBackground(selectGen);
+    // changeBackground(selectGen);
   }
+
 
   // Select 9 random pokemon from current generation
   function getRandomPokemon(currentPokeSpecies) {
