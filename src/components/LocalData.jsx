@@ -17,6 +17,7 @@ import pokeGlitch3 from '../assets/Aerodactyl_Fossil.png'
 
 // Loading icon
 import pokeballGif from '../assets/Pokeball.gif'
+import pokeBall from '../assets/Poke_Ball.png'
 
 
 const glitchPokemon = [
@@ -100,4 +101,6 @@ const backgroundImg = {
 
 
 
-export { backgroundImg, glitchPokemon }
+
+
+export { backgroundImg, glitchPokemon, pokeBall }
