@@ -16,7 +16,6 @@ import pokeGlitch2 from '../assets/YGlitchMissingno_.png'
 import pokeGlitch3 from '../assets/Aerodactyl_Fossil.png'
 
 // Loading icon
-import pokeballGif from '../assets/Pokeball.gif'
 import pokeBall from '../assets/Poke_Ball.png'
 
 
@@ -92,11 +91,7 @@ const backgroundImg = {
   },
   error: {
     path: missingNo
-  },
-  loadingIcon: {
-    path: pokeballGif
   }
-
 };
 
 
