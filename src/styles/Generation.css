@@ -1,23 +1,21 @@
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 700,
-  'GRAD' 0,
-  'opsz' 48
-}
-
-fieldset {
+.fieldset {
   background-color: var(--white-bg-transparent);
 
   max-width: 350px;
+  height: 100vh;
   padding: 1rem;
 
-  border: 7px double black;
+  /* border: 2px solid rgb(184, 184, 184); */
+  border: none;
 
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 1rem;
+
+  /* box-shadow: var(--border-box-shadow); */
+  box-shadow: var(--border-box-shadow3);
 }
 
 .legend {
@@ -28,19 +26,25 @@ fieldset {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 1rem;
 
-  padding-left: 1rem;
+  /* padding-left: 1rem; */
 }
 
 .generationList > label {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
 
   cursor: pointer;
 
   transition: all 200ms ease-in-out;
-  /* padding-left: 1rem; */
+  padding-left: 0.25rem;
+}
+
+label:hover {
+  color: red;
+  transform: scale(1.2);
 }
 
 input[type="radio"] {
@@ -49,19 +53,20 @@ input[type="radio"] {
   padding-left: 30px;
 }
 
-span {
-  width: 24px;
-  height: 24px;
-}
+label {
+  width: 190px;
+  height: 35px;
 
-label:hover {
-  color: blueviolet;
-  transform: scale(1.2);
-  /* content: url('src/assets/Poke_Ball.png'); */
-  /* position: absolute; */
+  border-radius: 3px;
+  box-shadow: var(--border-box-shadow2);
 }
 
 label:has(input:checked)::before  {
   content: url('src/assets/Poke_Ball.png');
   position: absolute;
+}
+
+span {
+  width: 24px;
+  height: 24px;
 }
