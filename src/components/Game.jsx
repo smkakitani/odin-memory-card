@@ -16,17 +16,7 @@ function getRandomInt(max, numItens) {
 
   for (let i = 0; i < numItens; i++) {
     let num = Math.floor(Math.random() * (max - min + 1) + min);
-    
-    /* if (!numArray.includes(num)) {
-      numArray.push(num);
-    } else {
-      while (numArray.includes(num)) {
-        num = Math.floor(Math.random() * (max - min + 1) + min);
-        if (!numArray.includes(num)) {
-          numArray.push(num);
-        }
-      }
-    } */    
+      
     numArray.includes(num) ? numItens += 1 : numArray.push(num);
   }
   
@@ -35,9 +25,18 @@ function getRandomInt(max, numItens) {
 
 function createPokemonArray(pokeArray, pokemonIndex) {
   const pokemon = [];
+
   pokemonIndex.forEach((number) => {
-    const poke = pokeArray.at(number).name;
-    pokemon.push(poke);
+    // Pokemon names was causing too many errors, pokemon-species was better because of their ID related to numbers on end point
+
+    // const pokeName = pokeArray.at(number).name;
+    const pokeURL = pokeArray.at(number).url;
+    const pokeSliced = pokeURL.slice(41);
+    const pokeNumber = pokeSliced.replace(/[^0-9]/g, '');
+
+    // console.log(pokeSliced);
+    // pokemon.push(pokeName);
+    pokemon.push(pokeNumber);
   });
 
   return pokemon;
@@ -77,7 +76,7 @@ export default function GameTable() {
 
     fetchData('/generation/').then(result => {
       if(!ignore) {
-        console.log('Fetching generation list');
+        // console.log('Fetching generation list');
         let nextId = 1;
         const tempArray = [];
         result.results.forEach(gen => {
@@ -100,7 +99,7 @@ export default function GameTable() {
     const apiGeneration = async () => {
       try {
         if(!ignore || isReset) {
-          console.log('Fetching pokemon from "' + selectGen + '".');
+          // console.log('Fetching pokemon from "' + selectGen + '".');
 
           const response = await fetchData('/generation/' + selectGen);
           const generationInfo = response;
@@ -152,6 +151,10 @@ export default function GameTable() {
           if (!ignore) {
             // API problems with 'wishiwashi', adding '-solo' to fix it
             if (url === 'wishiwashi') url = url + '-solo';
+            if (url === 'eiscue') url = url + '-ice';
+            if (url === 'mimikyu') url = url + '-disguised';
+            if (url === 'basculegion') url = url + '-male';
+            if (url === 'toxtricity') url = url + '-amped';
 
             
             const response = await fetchData('/pokemon/' + url)
@@ -164,6 +167,7 @@ export default function GameTable() {
           console.log(error)
         }
       }
+      // apiPokemonInfo('eiscue');
       // Map through array of pokemon names to fetch each individual data
       const arrayInfo = async (arrayName) => {
         if (!ignore) {
@@ -196,12 +200,12 @@ export default function GameTable() {
     const pokemonIndex = getRandomInt(currentPokeSpeciesMax, numItens);
     // console.log('Index of random pokemon ' + pokemonIndex);
 
-    const pokemonListName = createPokemonArray(currentPokeSpecies, pokemonIndex);
-    console.log(`Link of index [${pokemonIndex}] with pokemon names [${pokemonListName}].`);
+    const pokemonListId = createPokemonArray(currentPokeSpecies, pokemonIndex);
+    // console.log(`Link of index [${pokemonIndex}] with pokemon names [${pokemonListId}].`);
 
     // 
-    setPokeRandomNames(pokemonListName);
-    // console.log(pokemonListName);
+    setPokeRandomNames(pokemonListId);
+    // console.log(pokemonListId);
   }
 
   function gameReset() {
