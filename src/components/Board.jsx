@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
+import { glitchPokemon } from './LocalData';
+
 import '../styles/Board.css'
 
 
@@ -16,13 +18,14 @@ function shuffle(array) {
 function CreateCard({ pokemon, onClick }) {
   const { name, id, sprite } = pokemon;
 
+
   return (
     <div 
     key={pokemon.id}
     className="card-container"
     onClick={onClick}>
       <div className="sprite">
-        <img src={pokemon.sprite} alt={pokemon.name} />
+        <img src={pokemon.sprite ? pokemon.sprite : glitchPokemon[1].sprite} alt={pokemon.name} />
       </div>
       <p className="pokemon-name">{pokemon.name}
       </p>
@@ -56,6 +59,9 @@ export default function BoardGame({ pokemonList, gameReset }) {
         // keep update function for posterior api call
         setRenderCards(() => tempCards);
         setIsGameRunning(true);
+
+        // reset current score so player won't be able to keep current score
+
       }
     }
     
