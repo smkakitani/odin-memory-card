@@ -62,7 +62,7 @@ label {
 }
 
 label:has(input:checked)::before  {
-  content: url('src/assets/Poke_Ball.png');
+  content: url('public/Poke_Ball.png');
   position: absolute;
 }
 
