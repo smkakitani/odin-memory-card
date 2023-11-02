@@ -42,6 +42,15 @@ function createPokemonArray(pokeArray, pokemonIndex) {
   return pokemon;
 }
 
+// Shuffle using Fisher-Yates sorting algorithm
+function shuffle(array) {
+  for (let i = array.length -1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 
 export default function GameTable() {
   const [selectGen, setSelectGen] = useState('generation-i');
@@ -50,7 +59,108 @@ export default function GameTable() {
   const [pokeRandomNames, setPokeRandomNames] = useState(null);
   const [currentPokeInfo, setCurrentPokeInfo] = useState(null);
   const [isReset, setIsReset] = useState(false);  
-  
+
+  // bringing game logic to Game
+  const [displayCards, setDisplayCards] = useState(null);
+  const [game, setGame] = useState({
+    idCards: [],
+    current_score: 0,
+    highest_score: 0,
+  });
+
+
+  // Game 
+  function resetScore() {
+    setGame(prevState =>{
+      return {
+        idCards: [],
+        current_score: 0,
+        highest_score: prevState.highest_score,
+      }
+    });
+  }
+
+  function addCurrentScore() {
+    setGame(prevState =>{
+      return {
+        ...prevState,
+        idCards: [
+          ...prevState.idCards
+        ],
+        current_score: prevState.current_score + 1,
+        highest_score: prevState.highest_score,
+      }
+    });
+  }
+
+  function addHighestScore() {
+    setGame(prevState =>{
+      return {
+        ...prevState,
+        idCards: [
+          ...prevState.idCards,
+        ],
+        current_score: prevState.current_score,
+        highest_score: prevState.highest_score + 1,
+      }
+    });
+  }
+
+  // Shuffle 
+  function shuffleCards() {
+    const nextDisplayCards = [...displayCards];
+    const shuffledArr = shuffle(nextDisplayCards);
+
+    setDisplayCards(shuffledArr);    
+  }
+
+  // Player click then resolve game
+  function handleCards(pokemon) {
+    console.log(pokemon.id);
+
+    if (game.idCards.includes(pokemon.id)) {
+      setGame(prevState =>{
+        return {
+          idCards: [],
+          current_score: 0,
+          highest_score: prevState.highest_score,
+        }
+      });
+
+      // call new pokemon list from current generation
+      gameReset();
+    } else if (game.highest_score > game.current_score) {
+      setGame(prevState =>{
+        return {
+          ...prevState,
+          idCards: [
+            ...prevState.idCards,
+            pokemon.id,
+          ],
+          current_score: prevState.current_score + 1,
+          highest_score: prevState.highest_score,
+        }
+      });
+      shuffleCards();
+    } else {
+      setGame(prevState =>{
+        return {
+          ...prevState,
+          idCards: [
+            ...prevState.idCards,
+            pokemon.id,
+          ],
+          current_score: prevState.current_score + 1,
+          highest_score: prevState.highest_score + 1,
+        }
+      });
+      shuffleCards();
+    }
+  }
+
+
+
+
 
   useEffect(() => {
     // Background image change alongside current generation
@@ -148,15 +258,7 @@ export default function GameTable() {
       // Fetch pokemon's info from API
       const apiPokemonInfo = async (url) => {
         try {
-          if (!ignore) {
-            // API problems with 'wishiwashi', adding '-solo' to fix it
-            if (url === 'wishiwashi') url = url + '-solo';
-            if (url === 'eiscue') url = url + '-ice';
-            if (url === 'mimikyu') url = url + '-disguised';
-            if (url === 'basculegion') url = url + '-male';
-            if (url === 'toxtricity') url = url + '-amped';
-
-            
+          if (!ignore) {            
             const response = await fetchData('/pokemon/' + url)
             const currentPokemon = await response;
 
@@ -167,7 +269,7 @@ export default function GameTable() {
           console.log(error)
         }
       }
-      // apiPokemonInfo('eiscue');
+
       // Map through array of pokemon names to fetch each individual data
       const arrayInfo = async (arrayName) => {
         if (!ignore) {
@@ -181,6 +283,37 @@ export default function GameTable() {
 
     return () => ignore = true;
   }, [pokeRandomNames]);
+
+
+  // from Board.jsx
+  useEffect(() => {
+    let ignore = false;
+
+    if(!ignore) {
+      if (currentPokeInfo === null) return;
+
+      if (currentPokeInfo.length > 0) {
+        let initialList = currentPokeInfo.slice();
+        const tempCards = [...initialList];
+
+        // keep update function for posterior api call
+        setDisplayCards(() => tempCards);
+        // setIsGameRunning(true);
+
+        // reset current score so player won't be able to keep current score
+
+      }
+    }
+    
+    return () => {
+      ignore = false;
+      // setIsGameRunning(false);
+    }    
+  }, [currentPokeInfo]);
+
+
+
+
 
 
   // Handling Generation choice
@@ -208,6 +341,7 @@ export default function GameTable() {
     // console.log(pokemonListId);
   }
 
+  
   function gameReset() {
     setIsReset(true);
   }
@@ -220,9 +354,11 @@ export default function GameTable() {
         handleRadio={handleSelectGeneration}
       />
       <BoardGame 
-        pokemonList={currentPokeInfo}
-        isReset={isReset}
-        gameReset={gameReset}
+        displayCards={displayCards}
+        handleCards={handleCards}
+        game={game}
+        // isReset={isReset}
+        // gameReset={gameReset}
       />
     </>
   );
