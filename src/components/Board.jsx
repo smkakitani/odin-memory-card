@@ -1,8 +1,7 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
 import '../styles/Board.css'
 
-
-// Functions
 
 // Shuffle using Fisher-Yates sorting algorithm
 function shuffle(array) {
@@ -33,8 +32,7 @@ function CreateCard({ pokemon, onClick }) {
 
 
 // Main component
-export default function BoardGame({ pokemonList, isReset, gameReset }) {
-  // to store ID of clicked pokemon
+export default function BoardGame({ pokemonList, gameReset }) {
   const [renderCards, setRenderCards] = useState(null);
   const [isGameRunning, setIsGameRunning] = useState(false);
   const [game, setGame] = useState({
@@ -54,10 +52,10 @@ export default function BoardGame({ pokemonList, isReset, gameReset }) {
       if (pokemonList.length > 0) {
         let initialList = pokemonList.slice();
         const tempCards = [...initialList];
-        // console.log(tempCards);
-        setRenderCards(() => tempCards); //keep update function for posterior api call
+
+        // keep update function for posterior api call
+        setRenderCards(() => tempCards);
         setIsGameRunning(true);
-        // shuffleCards(tempCards);
       }
     }
     
@@ -73,7 +71,6 @@ export default function BoardGame({ pokemonList, isReset, gameReset }) {
     console.log(pokemon.id);
 
     if (game.idCards.includes(pokemon.id)) {
-      console.log('this id already exist or isnt a number');
       setGame(prevState =>{
         return {
           idCards: [],
@@ -82,10 +79,9 @@ export default function BoardGame({ pokemonList, isReset, gameReset }) {
         }
       });
 
-      // call new pokemon list from current generation      
+      // call new pokemon list from current generation
       gameReset();
     } else if (game.highest_score > game.current_score) {
-    // update id
       setGame(prevState =>{
         return {
           ...prevState,
@@ -117,19 +113,14 @@ export default function BoardGame({ pokemonList, isReset, gameReset }) {
 
   // Shuffle 
   const shuffleCards = () => {
-    console.log('shuffling cards!');
-    console.log('Current state', renderCards);
-
     const nextRenderCards = [...renderCards];
-    // console.log('Copy of current state', nextRenderCards);
     const shuffledArr = shuffle(nextRenderCards);
 
-    console.log('Shuffled array', shuffledArr);
     setRenderCards(shuffledArr);    
   }
 
 
-  // Score board -> send outside this function?
+  // Score board
   function ScoreTable() {
     return (
       <div className="score-container">
