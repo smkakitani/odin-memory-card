@@ -12,4 +12,4 @@ This project was made following [The Odin Project](https://www.theodinproject.co
 - useEffect: hook to call API, sync background with selected Pokemon generation
 - CSS: for styling the game
 
-[Link to preview](https://)
+[Link to preview](https://keen-croquembouche-ec28e2.netlify.app/)
