@@ -13,3 +13,5 @@ This project was made following [The Odin Project](https://www.theodinproject.co
 - CSS: for styling the game
 
 [Link to preview](https://keen-croquembouche-ec28e2.netlify.app/)
+
+![Screenshot of page](src/assets/Memory-card-Pokemon.png)
