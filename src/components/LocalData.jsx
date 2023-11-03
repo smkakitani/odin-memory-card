@@ -18,6 +18,10 @@ import pokeGlitch3 from '../assets/Aerodactyl_Fossil.png'
 // Loading icon
 import pokeBall from '../assets/Poke_Ball.png'
 
+// Winner/Loser images
+import bulbasaur from '../assets/Bulbasaur.gif'
+import squirtles from '../assets/Squirtles.gif'
+
 
 const glitchPokemon = [
   {
@@ -94,8 +98,4 @@ const backgroundImg = {
   }
 };
 
-
-
-
-
-export { backgroundImg, glitchPokemon, pokeBall }
+export { backgroundImg, glitchPokemon, pokeBall, bulbasaur, squirtles }
