@@ -3,6 +3,7 @@ import fetchData from './PokemonApi'
 import { backgroundImg } from './LocalData';
 import GenerationBox from "./Generation";
 import BoardGame from "./Board";
+import Modal from "./Modal";
 
 // CSS import
 import '../styles/Game.css'
@@ -53,14 +54,17 @@ function shuffle(array) {
 
 
 export default function GameTable() {
+  // API state
   const [selectGen, setSelectGen] = useState('generation-i');
   const [generationList, setGenerationList] = useState(null);
   const [pokeSpecies, setPokeSpecies] = useState(null);
   const [pokeRandomNames, setPokeRandomNames] = useState(null);
-  const [currentPokeInfo, setCurrentPokeInfo] = useState(null);
-  const [isReset, setIsReset] = useState(false);  
+  const [currentPokeInfo, setCurrentPokeInfo] = useState(null); 
 
-  // bringing game logic to Game
+  // Game state
+  const [modal, setModal] = useState(false);
+  const [playerWin, setPlayerWin] = useState(true);
+  const [isReset, setIsReset] = useState(false);
   const [displayCards, setDisplayCards] = useState(null);
   const [game, setGame] = useState({
     idCards: [],
@@ -85,7 +89,7 @@ export default function GameTable() {
       return {
         ...prevState,
         idCards: [
-          ...prevState.idCards
+          ...prevState.idCards,
         ],
         current_score: prevState.current_score + 1,
         highest_score: prevState.highest_score,
@@ -106,7 +110,20 @@ export default function GameTable() {
     });
   }
 
-  // Shuffle 
+  function addPokemonId(cardID) {
+    setGame(prevState =>{
+      return {
+        ...prevState,
+        idCards: [
+          ...prevState.idCards,
+          cardID,
+        ],
+        current_score: prevState.current_score,
+        highest_score: prevState.highest_score,
+      }
+    });
+  }
+
   function shuffleCards() {
     const nextDisplayCards = [...displayCards];
     const shuffledArr = shuffle(nextDisplayCards);
@@ -114,52 +131,34 @@ export default function GameTable() {
     setDisplayCards(shuffledArr);    
   }
 
-  // Player click then resolve game
+  // Player click
   function handleCards(pokemon) {
-    console.log(pokemon.id);
+    // console.log(pokemon.id);
 
     if (game.idCards.includes(pokemon.id)) {
-      setGame(prevState =>{
-        return {
-          idCards: [],
-          current_score: 0,
-          highest_score: prevState.highest_score,
-        }
-      });
+      setPlayerWin(false);
 
       // call new pokemon list from current generation
       gameReset();
-    } else if (game.highest_score > game.current_score) {
-      setGame(prevState =>{
-        return {
-          ...prevState,
-          idCards: [
-            ...prevState.idCards,
-            pokemon.id,
-          ],
-          current_score: prevState.current_score + 1,
-          highest_score: prevState.highest_score,
-        }
-      });
-      shuffleCards();
+    } else if (game.current_score === 8) {
+      // player wins
+      setPlayerWin(true);
+      addHighestScore();      
+
+      // call new pokemon 
+      gameReset();
     } else {
-      setGame(prevState =>{
-        return {
-          ...prevState,
-          idCards: [
-            ...prevState.idCards,
-            pokemon.id,
-          ],
-          current_score: prevState.current_score + 1,
-          highest_score: prevState.highest_score + 1,
-        }
-      });
-      shuffleCards();
+      addPokemonId(pokemon.id);
+      addCurrentScore();
+
+      if (game.highest_score <= game.current_score) {
+        addHighestScore();    
+        shuffleCards();
+      } else {
+        shuffleCards();
+      }
     }
   }
-
-
-
 
 
   useEffect(() => {
@@ -179,7 +178,8 @@ export default function GameTable() {
     changeBackground(selectGen);
   }, [selectGen]);
 
-  // Populate an array with API's generation data to use in Generation component
+
+  // Populate an array with API's generations data
   useEffect(() => {
     let ignore = false;
     setGenerationList(null);
@@ -285,7 +285,7 @@ export default function GameTable() {
   }, [pokeRandomNames]);
 
 
-  // from Board.jsx
+  // Data to display cards
   useEffect(() => {
     let ignore = false;
 
@@ -296,30 +296,20 @@ export default function GameTable() {
         let initialList = currentPokeInfo.slice();
         const tempCards = [...initialList];
 
-        // keep update function for posterior api call
         setDisplayCards(() => tempCards);
-        // setIsGameRunning(true);
-
-        // reset current score so player won't be able to keep current score
-
       }
     }
     
     return () => {
       ignore = false;
-      // setIsGameRunning(false);
     }    
   }, [currentPokeInfo]);
-
-
-
-
 
 
   // Handling Generation choice
   function handleSelectGeneration(event) {
     setSelectGen(event.target.value);
-    // changeBackground(selectGen);
+    resetScore();
   }
 
 
@@ -343,7 +333,9 @@ export default function GameTable() {
 
   
   function gameReset() {
+    resetScore();
     setIsReset(true);
+    setModal(true);    
   }
 
 
@@ -351,15 +343,17 @@ export default function GameTable() {
     <>
       <GenerationBox 
         generationList={generationList}
-        handleRadio={handleSelectGeneration}
-      />
+        handleRadio={handleSelectGeneration} />
+
       <BoardGame 
         displayCards={displayCards}
         handleCards={handleCards}
-        game={game}
-        // isReset={isReset}
-        // gameReset={gameReset}
-      />
+        game={game} />
+
+      <Modal 
+      openModal={modal}
+      closeModal={() => setModal(false)}
+      playerWin={playerWin} />
     </>
   );
 }
