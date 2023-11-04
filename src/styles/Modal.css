@@ -20,6 +20,7 @@ dialog::backdrop {
 }
 
 dialog > button {
+  cursor: pointer;
   font-family: 'Sometype Mono', monospace;
   font-size: 1.25rem;
 
