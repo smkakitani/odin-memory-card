@@ -1,0 +1,21 @@
+footer {
+  background-color: rgba(31, 31, 31, 0.75);
+  color: white;
+  font-size: 0.75rem;
+  align-self: flex-end;
+
+  width: 100%;
+  padding: 0.5rem;
+
+  display: flex;
+  justify-content: center;
+}
+
+a:link, a:visited {
+  color: white;
+  text-decoration: none;
+}
+
+a > img {
+  vertical-align: middle;
+}

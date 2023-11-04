@@ -1,8 +1,8 @@
 .fieldset {
   background-color: var(--white-bg-transparent);
 
-  max-width: 350px;
-  height: 100vh;
+  max-width: 325px;
+  height: 90vh;
   padding: 1rem;
 
   /* border: 2px solid rgb(184, 184, 184); */

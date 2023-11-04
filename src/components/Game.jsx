@@ -340,7 +340,7 @@ export default function GameTable() {
 
 
   return (
-    <>
+    <main>
       <GenerationBox 
         generationList={generationList}
         handleRadio={handleSelectGeneration} />
@@ -354,6 +354,6 @@ export default function GameTable() {
       openModal={modal}
       closeModal={() => setModal(false)}
       playerWin={playerWin} />
-    </>
+    </main>
   );
 }
