@@ -48,5 +48,6 @@ body {
   min-width: 320px;
   min-height: 100vh;
 
+  background: url("./assets/map/Kanto_Map.png") center/cover;
   background-color: #5d6580;
 }
