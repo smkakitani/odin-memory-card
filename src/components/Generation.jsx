@@ -13,8 +13,7 @@ function manageGenerationName(text) {
 }
 
 function CreateGenerationsRadio({ generation, handleRadio }) {
-  const { id, name } = generation;
-  
+
   return(
     <label key={generation.id} >
       <input
@@ -32,37 +31,19 @@ function CreateGenerationsRadio({ generation, handleRadio }) {
 
 // Generation fieldset component
 export default function GenerationBox({ generationList, handleRadio }) {
-
-  if (generationList === null) {
-    return (
-      <div className='fieldset'>
-        <div className='legend'>Select your Pokemon generation:</div>
-        <div className='generationList'>
-          Loading...
-        </div>
-      </div>
-    );
-  }
-
   let generationCards = generationList.slice();
 
   return (
     <div className='fieldset'>
       <div className='legend'>Select your Pokemon generation:</div>
       <div className='generationList'>
-        {generationCards.map(gen => {
-          const generation = {
-            id: gen.id,
-            name: gen.name
-          }
-          return (
-            <CreateGenerationsRadio 
-              key={generation.id}
-              generation={generation}
-              handleRadio={handleRadio}
-            />
-          );
-        })}
+        {generationCards.map(gen => 
+          <CreateGenerationsRadio 
+            key={gen.id}
+            generation={gen}
+            handleRadio={handleRadio}
+          />
+        )}
       </div>
     </div>
   );

@@ -1,15 +1,18 @@
+// React
 import { useState, useEffect } from "react";
-import fetchData from './PokemonApi'
+// Data
+import fetchData from './PokemonApi';
 import { backgroundImg } from './LocalData';
+// Components
 import GenerationBox from "./Generation";
 import BoardGame from "./Board";
 import Modal from "./Modal";
+// Styles
+import '../styles/Game.css';
 
-// CSS import
-import '../styles/Game.css'
 
 
-// functions
+// 
 function getRandomInt(max, numItens) {
   const min = 0;
   max = Math.floor(max);
@@ -28,15 +31,10 @@ function createPokemonArray(pokeArray, pokemonIndex) {
   const pokemon = [];
 
   pokemonIndex.forEach((number) => {
-    // Pokemon names was causing too many errors, pokemon-species was better because of their ID related to numbers on end point
-
-    // const pokeName = pokeArray.at(number).name;
     const pokeURL = pokeArray.at(number).url;
     const pokeSliced = pokeURL.slice(41);
     const pokeNumber = pokeSliced.replace(/[^0-9]/g, '');
-
-    // console.log(pokeSliced);
-    // pokemon.push(pokeName);
+    
     pokemon.push(pokeNumber);
   });
 
@@ -49,23 +47,23 @@ function shuffle(array) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
+
   return array;
 }
 
 
+
+// 
 export default function GameTable() {
   // API state
   const [selectGen, setSelectGen] = useState('generation-i');
-  const [generationList, setGenerationList] = useState(null);
+  const [generationList, setGenerationList] = useState(() => JSON.parse(localStorage.getItem("generations"))); // Cached data on localStorage
   const [pokeSpecies, setPokeSpecies] = useState(null);
   const [pokeRandomNames, setPokeRandomNames] = useState(null);
-  const [currentPokeInfo, setCurrentPokeInfo] = useState(null); 
-
+  const [currentPokeInfo, setCurrentPokeInfo] = useState(null);
   // Game state
   const [modal, setModal] = useState(false);
   const [playerWin, setPlayerWin] = useState(true);
-  const [isReset, setIsReset] = useState(false);
-  const [displayCards, setDisplayCards] = useState(null);
   const [game, setGame] = useState({
     idCards: [],
     current_score: 0,
@@ -73,79 +71,118 @@ export default function GameTable() {
   });
 
 
+
+  // React hooks
+  // Populate an array with API's generations data
+  useEffect(() => {
+    const hasLocalGen = JSON.parse(localStorage.getItem("generations"));
+    // console.log(hasLocalGen);
+    if (!hasLocalGen) {
+      const generations = async () => {
+        try {
+          const gen = await fetchData('/generation/');
+
+          setGenerationList(gen);
+          // Set localStorage with API generations
+          localStorage.setItem("generations", JSON.stringify(gen));
+        } catch (error) {
+          console.error(error);
+        }
+      } 
+      generations();
+    } 
+    
+  }, []);
+
+  // Get pokemon from current generation
+  useEffect(() => {
+    const apiGeneration = async () => {
+      const data = await fetchData('/generation/' + selectGen);
+      const pokemonGen = data.pokemon_species;
+
+      setPokeSpecies(pokemonGen);
+      getRandomPokemon(pokemonGen);
+    }
+
+    apiGeneration();
+  }, [selectGen]);
+
+  // Fetch data of all 9 random pokemon of current generation
+  useEffect(() => {
+    if (pokeRandomNames === null) return;
+
+    if (pokeRandomNames.length > 0) {
+      const fetchRandomPoke = async (pokeId) => {
+        const data = await fetchData('/pokemon/' + pokeId);
+
+        return data;
+      }
+
+      // Map through array of pokemon names to fetch each individual data
+      const pokemonArray = async (pokemonId) => {
+        const pokemon = await Promise.all(pokemonId.map(pokeId => fetchRandomPoke(pokeId)));
+
+        setCurrentPokeInfo(pokemon);
+      }
+      pokemonArray(pokeRandomNames);
+    }
+  }, [pokeRandomNames]);
+
+
+
   // Game 
   function resetScore() {
-    setGame(prevState =>{
-      return {
-        idCards: [],
-        current_score: 0,
-        highest_score: prevState.highest_score,
-      }
+    setGame({
+      ...game,
+      idCards: [],
+      current_score: 0,
     });
   }
 
   function addCurrentScore() {
-    setGame(prevState =>{
-      return {
-        ...prevState,
-        idCards: [
-          ...prevState.idCards,
-        ],
-        current_score: prevState.current_score + 1,
-        highest_score: prevState.highest_score,
-      }
-    });
+    setGame(g => ({
+      ...g,
+      current_score: g.current_score + 1,
+    }));
   }
 
   function addHighestScore() {
-    setGame(prevState =>{
-      return {
-        ...prevState,
-        idCards: [
-          ...prevState.idCards,
-        ],
-        current_score: prevState.current_score,
-        highest_score: prevState.highest_score + 1,
-      }
-    });
+    setGame(g => ({
+      ...g,
+      highest_score: g.highest_score + 1,
+    }));
   }
 
   function addPokemonId(cardID) {
-    setGame(prevState =>{
-      return {
-        ...prevState,
-        idCards: [
-          ...prevState.idCards,
-          cardID,
-        ],
-        current_score: prevState.current_score,
-        highest_score: prevState.highest_score,
-      }
-    });
+    setGame(g => ({
+      ...g,
+      idCards: [
+        ...g.idCards,
+        cardID
+      ]
+    }));
   }
 
   function shuffleCards() {
-    const nextDisplayCards = [...displayCards];
-    const shuffledArr = shuffle(nextDisplayCards);
+    const copyPokemon = [...currentPokeInfo];
+    const suffledPokemon = shuffle(copyPokemon);
 
-    setDisplayCards(shuffledArr);    
+    setCurrentPokeInfo(suffledPokemon);
   }
 
-  // Player click
+  // Events
   function handleCards(pokemon) {
-    // console.log(pokemon.id);
-
     if (game.idCards.includes(pokemon.id)) {
       setPlayerWin(false);
 
-      // call new pokemon list from current generation
+      // Bring new random array of pokemon from current generation
       gameReset();
     } else if (game.current_score === 8) {
       // player wins
       setPlayerWin(true);
       addHighestScore();      
 
-      // call new pokemon 
+      // Bring new random array of pokemon from current generation
       gameReset();
     } else {
       addPokemonId(pokemon.id);
@@ -160,195 +197,48 @@ export default function GameTable() {
     }
   }
 
-
-  useEffect(() => {
-    // Background image change alongside current generation
-    function changeBackground(imagePath) {      
-      const bodyStyle = document.body.style;
-      // console.log(imagePath);
-  
-      if (selectGen === 'generation-i') {
-        bodyStyle.background = `url(${backgroundImg["generation-i"].path}) center`;
-        bodyStyle.backgroundSize = 'cover';
-      } else {
-        bodyStyle.background = `url(${backgroundImg[imagePath].path}) center`;
-        bodyStyle.backgroundSize = 'cover';
-      }
-    }
-    changeBackground(selectGen);
-  }, [selectGen]);
-
-
-  // Populate an array with API's generations data
-  useEffect(() => {
-    let ignore = false;
-    setGenerationList(null);
-
-    fetchData('/generation/').then(result => {
-      if(!ignore) {
-        // console.log('Fetching generation list');
-        let nextId = 1;
-        const tempArray = [];
-        result.results.forEach(gen => {
-          tempArray.push({ id: nextId++, name: gen.name });
-        });
-        setGenerationList(tempArray);
-        // console.log(tempArray);
-      }
-    });
-
-    return () => ignore = true;
-  }, []);
-
-
-  // Get pokemon from current generation
-  useEffect(() => {
-    let ignore = false;
-    setPokeSpecies(null);
-
-    const apiGeneration = async () => {
-      try {
-        if(!ignore || isReset) {
-          // console.log('Fetching pokemon from "' + selectGen + '".');
-
-          const response = await fetchData('/generation/' + selectGen);
-          const generationInfo = response;
-          
-          // console.log(generationInfo.pokemon_species);
-          setPokeSpecies(generationInfo.pokemon_species);
-        }
-      } catch (error) {
-        console.log(error)
-      }      
-    }
-    apiGeneration();
-    setIsReset(false);
-
-    return () => ignore = true;
-  }, [selectGen, isReset]);
-
-
-  // Update pokeRandomNames with current generation Species
-  useEffect(() => {
-    let ignore = false;
-    setPokeSpecies(null);
-    
-    if (!ignore) {
-      if (pokeSpecies === null) return;
-
-      if (pokeSpecies.length > 0) {
-        getRandomPokemon(pokeSpecies);
-      }
-    }
-    
-    
-    return () => ignore = true;
-  }, [pokeSpecies]);
-
-
-  // Fetch data of all 9 random pokemon of current generation
-  useEffect(() => {
-    let ignore = false;
-    setCurrentPokeInfo(null);
-
-
-    if (pokeRandomNames === null) return;
-
-    if (pokeRandomNames.length > 0) {
-      // Fetch pokemon's info from API
-      const apiPokemonInfo = async (url) => {
-        try {
-          if (!ignore) {            
-            const response = await fetchData('/pokemon/' + url)
-            const currentPokemon = await response;
-
-            // console.log(currentPokemon);
-            return currentPokemon;
-          }
-        } catch (error) {
-          console.log(error)
-        }
-      }
-
-      // Map through array of pokemon names to fetch each individual data
-      const arrayInfo = async (arrayName) => {
-        if (!ignore) {
-          const pokeInfo = await Promise.all(arrayName.map((name) => apiPokemonInfo(name)));
-          setCurrentPokeInfo(pokeInfo);
-          // console.log(pokeInfo);
-        }
-      }
-      arrayInfo(pokeRandomNames);
-    }
-
-    return () => ignore = true;
-  }, [pokeRandomNames]);
-
-
-  // Data to display cards
-  useEffect(() => {
-    let ignore = false;
-
-    if(!ignore) {
-      if (currentPokeInfo === null) return;
-
-      if (currentPokeInfo.length > 0) {
-        let initialList = currentPokeInfo.slice();
-        const tempCards = [...initialList];
-
-        setDisplayCards(() => tempCards);
-      }
-    }
-    
-    return () => {
-      ignore = false;
-    }    
-  }, [currentPokeInfo]);
-
-
-  // Handling Generation choice
   function handleSelectGeneration(event) {
     setSelectGen(event.target.value);
     resetScore();
+    
+    // Body's background
+    const bodyStyle = document.body.style;
+    bodyStyle.background = `url(${backgroundImg[event.target.value].path}) center`;
+    bodyStyle.backgroundSize = 'cover';
   }
 
 
   // Select 9 random pokemon from current generation
   function getRandomPokemon(currentPokeSpecies) {
-    // get max pokemon - 1 (array starts with 0) to be used in random generator integer
     const currentPokeSpeciesMax = currentPokeSpecies.length - 1;
 
     // number of cards to be displayed in the game
     const numItens = 9;
     const pokemonIndex = getRandomInt(currentPokeSpeciesMax, numItens);
-    // console.log('Index of random pokemon ' + pokemonIndex);
 
     const pokemonListId = createPokemonArray(currentPokeSpecies, pokemonIndex);
-    // console.log(`Link of index [${pokemonIndex}] with pokemon names [${pokemonListId}].`);
-
-    // 
+    
     setPokeRandomNames(pokemonListId);
-    // console.log(pokemonListId);
   }
-
   
   function gameReset() {
     resetScore();
-    setIsReset(true);
-    setModal(true);    
+    setModal(true);
+    getRandomPokemon(pokeSpecies);
   }
-
 
   return (
     <main>
-      <GenerationBox 
+      {generationList && <GenerationBox 
         generationList={generationList}
-        handleRadio={handleSelectGeneration} />
+        handleRadio={handleSelectGeneration}
+      />}
 
-      <BoardGame 
-        displayCards={displayCards}
-        handleCards={handleCards}
-        game={game} />
+      {currentPokeInfo && <BoardGame 
+        displayCards={currentPokeInfo}
+        handleClick={handleCards}
+        game={game} 
+      />}
 
       <Modal 
       openModal={modal}

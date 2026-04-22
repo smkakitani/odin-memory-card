@@ -1,7 +1,11 @@
-import './App.css'
-import GameTable from './components/Game'
-import Footer from './components/Footer'
+// Components
+import GameTable from './components/Game';
+import Footer from './components/Footer';
+// Styles
+import './App.css';
 
+
+// 
 function App() {
   return (
     <>
@@ -11,4 +15,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
