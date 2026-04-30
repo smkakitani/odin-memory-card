@@ -1,13 +1,21 @@
 /* eslint-disable react/prop-types */
 // Data
 import { glitchPokemon } from './LocalData';
+// Types
+import type { PokemonInfoArr, PokemonInfo, Game } from './Game';
 // Styles
 import '../styles/Board.css';
 
 
 
 // Main component
-export default function BoardGame({ displayCards, handleClick, game }) {
+type OnClickCard = (pokemon: PokemonInfo) => void;
+type BoardGameProps = {
+  displayCards: PokemonInfoArr;
+  handleClick: OnClickCard;
+  game: Game;
+};
+export default function BoardGame({ displayCards, handleClick, game }: BoardGameProps) {
 
   if (displayCards === null) {
     return (
@@ -37,23 +45,30 @@ export default function BoardGame({ displayCards, handleClick, game }) {
 }
 
 // Components
-function CreateCard({ pokemon, onClick }) {
+type CreateCardProps = {
+  pokemon: PokemonInfo;
+  onClick: () => void;
+};
+function CreateCard({ pokemon, onClick }: CreateCardProps) {
   return (
     <div 
     key={pokemon.id}
     className="card-container"
     onClick={onClick}>
       <div className="sprite">
-        <img src={pokemon.sprite ? pokemon.sprite : glitchPokemon[1].sprite} alt={pokemon.name} />
+        <img 
+          src={pokemon.sprite ? pokemon.sprite : glitchPokemon[1]?.sprite} 
+          alt={pokemon.name} 
+        />
       </div>
-      <p className="pokemon-name">{pokemon.name}
+      <p className="pokemon-name">
+        {pokemon.name}
       </p>
     </div>
   );
 }
 
-
-function ScoreTable({ game }) {
+function ScoreTable({ game }: { game: Game }) {
   return (
     <div className="score-container">
       <p>SCORE</p>

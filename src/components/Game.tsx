@@ -17,7 +17,7 @@ interface PokemonSpecie {
   name: string;
   url: string;
 }
-interface PokemonInfo {
+export interface PokemonInfo {
   id: number;
   name: string;
   sprite: string;
@@ -80,8 +80,8 @@ export type Generation = {
 export type GenArray = Array<Generation>;
 type PokemonSpecieArr = Array<PokemonSpecie>;
 type PokemonID = string[];
-type PokemonInfoArr = Array<PokemonInfo>;
-type Game = {
+export type PokemonInfoArr = Array<PokemonInfo>;
+export type Game = {
   idCards: number[];
   current_score: number;
   highest_score: number;
