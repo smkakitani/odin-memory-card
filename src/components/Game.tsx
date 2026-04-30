@@ -12,11 +12,21 @@ import '../styles/Game.css';
 
 
 
+// Types
+interface PokemonSpecie {
+  name: string;
+  url: string;
+}
+interface PokemonInfo {
+  id: number;
+  name: string;
+  sprite: string;
+}
 // 
-function getRandomInt(max, numItens) {
+function getRandomInt(max: number, numItens: number): number[] {
   const min = 0;
   max = Math.floor(max);
-  const numArray = [];
+  const numArray: number[] = [];
 
   for (let i = 0; i < numItens; i++) {
     let num = Math.floor(Math.random() * (max - min + 1) + min);
@@ -27,22 +37,31 @@ function getRandomInt(max, numItens) {
   return numArray;
 }
 
-function createPokemonArray(pokeArray, pokemonIndex) {
-  const pokemon = [];
+function createPokemonArray(
+  pokeArray: Array<PokemonSpecie>,
+  pokemonIndex: number[]
+): string[] {
+  const pokemon: string[] = [];
 
-  pokemonIndex.forEach((number) => {
-    const pokeURL = pokeArray.at(number).url;
-    const pokeSliced = pokeURL.slice(41);
-    const pokeNumber = pokeSliced.replace(/[^0-9]/g, '');
-    
-    pokemon.push(pokeNumber);
-  });
+  if (Array.isArray(pokeArray)) {
+    pokemonIndex.forEach((number) => {      
+      const pokemonInfo = pokeArray.at(number);
+
+      if (pokemonInfo) {
+        const pokeURL = pokemonInfo.url;
+        const pokeSliced = pokeURL.slice(41);
+        const pokeNumber = pokeSliced.replace(/[^0-9]/g, '');
+        
+        pokemon.push(pokeNumber);
+      }      
+    });
+  }
 
   return pokemon;
 }
 
 // Shuffle using Fisher-Yates sorting algorithm
-function shuffle(array) {
+function shuffle<Type>(array: Array<Type>): Array<Type> {
   for (let i = array.length -1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -53,18 +72,31 @@ function shuffle(array) {
 
 
 
-// 
+// Hooks types
+export type Generation = {
+  id: number;
+  name: string;
+}
+export type GenArray = Array<Generation>;
+type PokemonSpecieArr = Array<PokemonSpecie>;
+type PokemonID = string[];
+type PokemonInfoArr = Array<PokemonInfo>;
+type Game = {
+  idCards: number[];
+  current_score: number;
+  highest_score: number;
+}
 export default function GameTable() {
   // API state
-  const [selectGen, setSelectGen] = useState('generation-i');
-  const [generationList, setGenerationList] = useState(() => JSON.parse(localStorage.getItem("generations"))); // Cached data on localStorage
-  const [pokeSpecies, setPokeSpecies] = useState(null);
-  const [pokeRandomNames, setPokeRandomNames] = useState(null);
-  const [currentPokeInfo, setCurrentPokeInfo] = useState(null);
+  const [selectGen, setSelectGen] = useState<string>('generation-i');
+  const [generationList, setGenerationList] = useState<GenArray>(() => JSON.parse(localStorage.getItem("generations") || '""') ); // Cached data on localStorage
+  const [pokeSpecies, setPokeSpecies] = useState<PokemonSpecieArr>([]);
+  const [pokeRandomNames, setPokeRandomNames] = useState<PokemonID>([]);
+  const [currentPokeInfo, setCurrentPokeInfo] = useState<PokemonInfoArr>([]);
   // Game state
-  const [modal, setModal] = useState(false);
-  const [playerWin, setPlayerWin] = useState(true);
-  const [game, setGame] = useState({
+  const [modal, setModal] = useState<boolean>(false);
+  const [playerWin, setPlayerWin] = useState<boolean>(true);
+  const [game, setGame] = useState<Game>({
     idCards: [],
     current_score: 0,
     highest_score: 0,
@@ -75,9 +107,10 @@ export default function GameTable() {
   // React hooks
   // Populate an array with API's generations data
   useEffect(() => {
-    const hasLocalGen = JSON.parse(localStorage.getItem("generations"));
+    // const hasLocalGen = JSON.parse(localStorage.getItem("generations"));
+    const hasLocalGen = localStorage.getItem("generations");
     // console.log(hasLocalGen);
-    if (!hasLocalGen) {
+    if (/* !hasLocalGen */ hasLocalGen === null) {
       const generations = async () => {
         try {
           const gen = await fetchData('/generation/');
@@ -109,17 +142,17 @@ export default function GameTable() {
 
   // Fetch data of all 9 random pokemon of current generation
   useEffect(() => {
-    if (pokeRandomNames === null) return;
+    // if (pokeRandomNames === null) return;
 
     if (pokeRandomNames.length > 0) {
-      const fetchRandomPoke = async (pokeId) => {
+      const fetchRandomPoke = async (pokeId: string) => {
         const data = await fetchData('/pokemon/' + pokeId);
 
         return data;
       }
 
       // Map through array of pokemon names to fetch each individual data
-      const pokemonArray = async (pokemonId) => {
+      const pokemonArray = async (pokemonId: string[]) => {
         const pokemon = await Promise.all(pokemonId.map(pokeId => fetchRandomPoke(pokeId)));
 
         setCurrentPokeInfo(pokemon);
@@ -153,7 +186,7 @@ export default function GameTable() {
     }));
   }
 
-  function addPokemonId(cardID) {
+  function addPokemonId(cardID: number) {
     setGame(g => ({
       ...g,
       idCards: [
@@ -171,7 +204,7 @@ export default function GameTable() {
   }
 
   // Events
-  function handleCards(pokemon) {
+  function handleCards(pokemon: PokemonInfo) {
     if (game.idCards.includes(pokemon.id)) {
       setPlayerWin(false);
 
@@ -197,19 +230,23 @@ export default function GameTable() {
     }
   }
 
-  function handleSelectGeneration(event) {
-    setSelectGen(event.target.value);
-    resetScore();
-    
-    // Body's background
-    const bodyStyle = document.body.style;
-    bodyStyle.background = `url(${backgroundImg[event.target.value].path}) center`;
-    bodyStyle.backgroundSize = 'cover';
+  function handleSelectGeneration(event: React.ChangeEvent<HTMLInputElement>) {
+    const generation = event.target.value;
+
+    if (typeof generation === "string") {
+      setSelectGen(generation);
+      resetScore();
+      
+      // Body's background
+      const bodyStyle = document.body.style;
+      bodyStyle.background = `url(${backgroundImg[generation]?.path}) center`;
+      bodyStyle.backgroundSize = 'cover';
+    }
   }
 
 
   // Select 9 random pokemon from current generation
-  function getRandomPokemon(currentPokeSpecies) {
+  function getRandomPokemon(currentPokeSpecies: PokemonSpecie[]) {
     const currentPokeSpeciesMax = currentPokeSpecies.length - 1;
 
     // number of cards to be displayed in the game
