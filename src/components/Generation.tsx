@@ -1,6 +1,6 @@
 // /* eslint-disable react/prop-types */
 // Types
-import type { GenArray, Generation } from './Game.tsx';
+import type { GenerationData } from './PokemonApi';
 // Styles
 import '../styles/Generation.css';
 
@@ -25,7 +25,7 @@ function manageGenerationName(text: string) {
 // Types
 type OnChangeGeneration = (event: React.ChangeEvent<HTMLInputElement>) => void;
 type CreateGenerationsRadioProps = {
-  generation: Generation;
+  generation: GenerationData;
   handleRadio: OnChangeGeneration;
 };
 function CreateGenerationsRadio({ 
@@ -49,7 +49,7 @@ function CreateGenerationsRadio({
 
 // Generation fieldset component
 type GenerationBoxProps = {
-  generationList: GenArray;
+  generationList: GenerationData[];
   handleRadio: OnChangeGeneration;
 };
 export default function GenerationBox({ 
