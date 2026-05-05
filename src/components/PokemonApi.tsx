@@ -1,4 +1,4 @@
-export default function fetchData(url) {
+export default function fetchData(url: string){
   if (url === '/generation/') {
 
     return fetchGeneration();
@@ -9,30 +9,40 @@ export default function fetchData(url) {
 
     return fetchPokemon(url);
   } else {
-
     console.error('Error with ' + url);
   }
   
 }
 
 // Generation pokemon
-async function fetchGenerationPokemon(gen) {
+export interface PokemonFromGeneration {
+  name: string;
+  url: string;
+};
+async function fetchGenerationPokemon(gen: string) {
   try {
     const response = await fetch('https://pokeapi.co/api/v2' + gen + '/', {mode: 'cors'});
-    const pokemonGen = await response.json();
+    const { pokemon_species }: { pokemon_species: PokemonFromGeneration[] } = await response.json();
 
-    return pokemonGen;
+    return pokemon_species;
   } catch (error) {
     console.error('Error: ' + error + '. Received: ' + gen);
   }
 }
 
 // Generations
+export type GenerationData = {
+  id: number;
+  name: string;
+};
 async function fetchGeneration() {
   try {
     const response = await fetch('https://pokeapi.co/api/v2/generation/', { mode: 'cors' });
-    const data = await response.json();
-    const generationData = data.results.map((gen, index) => ({ id: index + 1, name: gen.name }));
+
+    if (!response.ok) throw new Error(response.statusText);
+
+    const { results } = await response.json();
+    const generationData: GenerationData[] = results.map((gen: { name: string; url: string }, index: number) => ({ id: index + 1, name: gen.name }));
 
     return generationData;
   } catch (error) {
@@ -41,11 +51,21 @@ async function fetchGeneration() {
 }
 
 // Pokemon
-async function fetchPokemon(pokemon) {
+export interface PokemonData {
+  id: number;
+  name: string;
+  sprite: string;
+};
+async function fetchPokemon(pokemon: string) {
   try {
     const response = await fetch('https://pokeapi.co/api/v2' + pokemon + '/', {mode: 'cors'});
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
     const data = await response.json();
-    const pokemonInfo = {
+    const pokemonInfo: PokemonData = {
       id: data.id,
       name: data.name,
       sprite: data.sprites.other["official-artwork"].front_default,
