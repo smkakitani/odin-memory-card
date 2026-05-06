@@ -1,17 +1,18 @@
 /* eslint-disable react/prop-types */
 // Data
 import { glitchPokemon } from './LocalData';
+import type { PokemonData } from './PokemonApi';
 // Types
-import type { PokemonInfoArr, PokemonInfo, Game } from './Game';
+import type { Game } from './Game';
 // Styles
 import '../styles/Board.css';
 
 
 
 // Main component
-type OnClickCard = (pokemon: PokemonInfo) => void;
+type OnClickCard = (pokemon: PokemonData) => void;
 type BoardGameProps = {
-  displayCards: PokemonInfoArr;
+  displayCards: PokemonData[];
   handleClick: OnClickCard;
   game: Game;
 };
@@ -46,7 +47,7 @@ export default function BoardGame({ displayCards, handleClick, game }: BoardGame
 
 // Components
 type CreateCardProps = {
-  pokemon: PokemonInfo;
+  pokemon: PokemonData;
   onClick: () => void;
 };
 function CreateCard({ pokemon, onClick }: CreateCardProps) {

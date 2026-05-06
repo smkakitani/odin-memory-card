@@ -12,12 +12,12 @@ import '../styles/Game.css';
 
 
 
-// Types
-export interface PokemonInfo {
-  id: number;
-  name: string;
-  sprite: string;
-}
+// // Types
+// export interface PokemonInfo {
+//   id: number;
+//   name: string;
+//   sprite: string;
+// }
 // 
 function getRandomInt(max: number, numItens: number): number[] {
   const min = 0;
@@ -217,7 +217,7 @@ export default function GameTable() {
   }
 
   // Events
-  function handleCards(pokemon: PokemonInfo) {
+  function handleCards(pokemon: PokemonData) {
     if (game.idCards.includes(pokemon.id)) {
       setPlayerWin(false);
 
