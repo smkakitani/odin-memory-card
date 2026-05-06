@@ -8,26 +8,34 @@ import '../styles/Modal.css';
 
 
 
-export default function Modal({ closeModal, openModal, playerWin }) {
-  const ref = useRef();
+type ModalProps = {
+  closeModal: () => void;
+  openModal: boolean;
+  playerWin: boolean;
+}
+export default function Modal({ 
+  closeModal, 
+  openModal, 
+  playerWin 
+}: ModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    if (openModal) {
-      ref.current?.showModal();
+    if (openModal && dialogRef) {
+      dialogRef.current?.showModal();
     } else {
-      ref.current?.close();
+      dialogRef.current?.close();
     }    
   }, [openModal]);
 
   return (
     <section className='modal-container'>
       <dialog 
-        ref={ref}
+        ref={dialogRef}
         onCancel={closeModal}
         >
           <div>
             {playerWin ? <img src={bulbasaur} alt='Bulbasaur' /> : <img src={squirtles} alt='Group of squirtle' />}
-            {/* <img src={playerWin ? bulbasaur : squirtles} alt="Bulbasaur" /> */}
           </div>
           {playerWin ? <p>Congratulations, you win!</p> : <p>Oh... ):</p>}
           
