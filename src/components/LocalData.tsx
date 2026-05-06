@@ -46,8 +46,19 @@ const glitchPokemon = [
   }
 
 ]
-
-const backgroundImg = {
+type GenerationInfo = {
+  id: number;
+  name: string;
+  path: string;
+}
+type ErrorPath = {
+    path: string
+}
+type BackgroundImage = {
+  [generation: string]: GenerationInfo | ErrorPath;
+  error: { path: string }
+}
+const backgroundImg: BackgroundImage= {
   'generation-i': {
     id: 1,
     name: 'Kanto',
